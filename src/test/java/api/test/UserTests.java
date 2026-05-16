@@ -1,5 +1,9 @@
 package api.test;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.notNullValue;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
@@ -43,9 +47,35 @@ public class UserTests {
 	{
 		logger.info("********** Creating user  ***************");
 		Response response=UserEndpoints.createUser(userPayload);
+		
+		
 		response.then().log().all();
 		
 		Assert.assertEquals(response.getStatusCode(),200);
+		
+		// STATUS CODE VALIDATION
+        response.then().statusCode(200);
+
+        // RESPONSE BODY VALIDATION
+        response.then().body("message", equalTo("" + userPayload.getId()));
+
+        // RESPONSE TIME VALIDATION
+        response.then().time(lessThan(3000L));
+
+        // CONTENT TYPE VALIDATION
+        response.then().contentType("application/json");
+
+        // HEADER VALIDATION
+        response.then().header("Server", notNullValue());
+
+        // PRINT RESPONSE
+        response.then().log().all();
+
+        // ID VALIDATION
+        String responseId =
+                response.jsonPath().getString("message");
+
+        System.out.println("Created User ID: " + responseId);
 		
 		logger.info("**********User is creatged  ***************");
 			
@@ -97,4 +127,5 @@ public class UserTests {
 		logger.info("********** User deleted ***************");
 	}
 
-}
+
+   }
